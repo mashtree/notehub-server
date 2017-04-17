@@ -23,8 +23,9 @@ public class Database {
 
         if (connection == null) {
             try {
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
                 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/notehub", "root", "");
+                System.out.println("Connection to mysql database is successfully created");
             } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -25,15 +25,15 @@ import java.util.List;
  *
  * @author aisyahumar
  */
-public class NoteChangeServiceServer extends UnicastRemoteObject implements NoteChangesService{
+public class NoteChangeServiceServer1 extends UnicastRemoteObject implements NoteChangesService{
     
     private Connection conn;
     private final String table = "note_change";
     
-    public NoteChangeServiceServer() throws RemoteException{
+    public NoteChangeServiceServer1() throws RemoteException{
         if(conn==null) conn = Database.getConnection();
     }
-
+    
     @Override
     public NoteChange insertNoteChange(NoteChange nc) throws RemoteException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -151,7 +151,5 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         return getNoteChanges(note.getIdNote());
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
     
 }
