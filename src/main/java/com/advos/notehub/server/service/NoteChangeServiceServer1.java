@@ -8,6 +8,7 @@ package com.advos.notehub.server.service;
 import com.advos.notehub.server.util.Database;
 import com.notehub.api.entity.Note;
 import com.notehub.api.entity.NoteChange;
+import com.notehub.api.entity.NoteChangesMap;
 import com.notehub.api.service.NoteChangesService;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -34,7 +35,7 @@ public class NoteChangeServiceServer1 extends UnicastRemoteObject implements Not
         if(conn==null) conn = Database.getConnection();
     }
     
-    @Override
+    /*@Override
     public NoteChange insertNoteChange(NoteChange nc) throws RemoteException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -56,7 +57,7 @@ public class NoteChangeServiceServer1 extends UnicastRemoteObject implements Not
         }
         return nc;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }*/
     
     @Override
     public void updateNoteChange(NoteChange nc) throws RemoteException {
@@ -150,6 +151,26 @@ public class NoteChangeServiceServer1 extends UnicastRemoteObject implements Not
     public List<NoteChange> getNoteChanges(Note note) throws RemoteException {
         return getNoteChanges(note.getIdNote());
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public NoteChangesMap insertNoteChange(NoteChangesMap ncm) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<NoteChange> getNoteChanges(Note note, int i) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getLastVersion(Note note, int i) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<NoteChangesMap> getNoteChangesMap(Note note, int i, int i1) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

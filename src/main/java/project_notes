@@ -1,0 +1,27 @@
+TODAY 
+#create login dialog client v
+#login request to server - server response v
+#add delete to note v
+#and commit/synch (use context menu on note's list)
+#add delete to shape
+#first commit
+
+================================================================================
+SYNCHRONIZE
+make implement runnable for giving services
+catch the request, put in the queue
+when the prev req done, then give service to the next request
+every time the service done, reply to the client that sent the request.
+
+NAMING SERVICE
+note configuration
+- has unique name that recognized by server and different from another
+- first the name will be created locally
+- then after first commit, server will create and send to client for the name that recognized by server
+- client update the name (add the server's name to conf's file)
+- collection of <name, attributes> pairs
+
+#SERVER
+
+
+

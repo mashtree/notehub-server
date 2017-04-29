@@ -45,7 +45,7 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String now = dateFormat.format(date);
-        String sql = "INSERT INTO "+table+"(id_user, username, password, last_connect, ip_address, updated_at) "+
+        String sql = "INSERT INTO "+table+"(id, name, password, last_connect, ip_address, updated_at) "+
                 " VALUES(?,?,?,?,?,?)";
         Random random = new Random();
         int id = random.nextInt(1000000)+5997;
@@ -77,7 +77,7 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String now = dateFormat.format(date);
-        String sql = "UPDATE "+table+" SET username = ?, password =?, last_connect=?, ip_address=?, updated_at=? "+
+        String sql = "UPDATE "+table+" SET name = ?, password =?, last_connect=?, ip_address=?, updated_at=? "+
                 " where username = ?";
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -96,7 +96,7 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
 
     @Override
     public void deleteUser(long l) throws RemoteException {
-        String sql = "DELETE FROM "+table+" WHERE id_user = ?";
+        String sql = "DELETE FROM "+table+" WHERE id = ?";
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, (int) l);
@@ -119,7 +119,7 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
             while(rs.next()){
                 user = new User();
                 user.setIdUser(rs.getInt("id_user"));
-                user.setUsername(rs.getString("username"));
+                user.setUsername(rs.getString("name"));
                 user.setPassword(rs.getString("password"));
                 user.setLastConnect(rs.getString("last_connect"));
                 user.setIpAddress(rs.getString("ip_address"));
@@ -143,7 +143,7 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
             while(rs.next()){
                 User user = new User();
                 user.setIdUser(rs.getInt("id_user"));
-                user.setUsername(rs.getString("username"));
+                user.setUsername(rs.getString("name"));
                 user.setPassword(rs.getString("password"));
                 user.setLastConnect(rs.getString("last_connect"));
                 user.setIpAddress(rs.getString("ip_address"));
@@ -160,13 +160,13 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
     
     private List<Integer> getAllUsersId(){
         List<Integer> allUsersId = new ArrayList<>();
-        String sql = "SELECT id_user "+
+        String sql = "SELECT id "+
                 "FROM user";
         try{
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(sql);
             while(rs.next()){
-                allUsersId.add(rs.getInt("id_user"));
+                allUsersId.add(rs.getInt("id"));
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());

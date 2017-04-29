@@ -23,8 +23,9 @@ public class Main {
     
     public static void main(String[] args){
         //System.setSecurityManager(new RMISecurityManager());
+        int port = args.length>0?Integer.parseInt(args[0]):Registry.REGISTRY_PORT;
         try{
-            Registry server = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            Registry server = LocateRegistry.createRegistry(port);
         
             //Database.getConnection();
 

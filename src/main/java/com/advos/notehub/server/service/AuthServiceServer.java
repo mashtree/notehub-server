@@ -47,8 +47,8 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
      */
     @Override
     public User login(User user) throws RemoteException {
-        String sql = "SELECT COUNT(username) as isexist "+
-                "FROM users WHERE username='"+user.getUsername()+"' AND password='"+user.getPassword()+"'";
+        String sql = "SELECT COUNT(name) as isexist "+
+                "FROM users WHERE name='"+user.getUsername()+"' AND plain_password='"+user.getPassword()+"'";
         try{
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(sql);
@@ -61,7 +61,7 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
                     // the id will be removed right after clients logout or close the desktop app
                     user = getUpdatedUser(user);
                     //Client.clients.put(user, Client.randomIdOnline(user));
-                    System.out.println(Client.clients.get(user));
+                    System.out.println(user.getUsername()+" login at "+getTimeNow()+", id_user:"+Client.clients.get(user.getIdUser()));
                 }        
             }
         }catch(SQLException e){
@@ -70,13 +70,20 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
         return user;
     }
     
+    private String getTimeNow(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String time = dateFormat.format(date);
+        return time;
+    }
+    
     /**
      * 
      * @param user 
      */
     private void setLastOnline(User user){
         String sql = "UPDATE users SET last_connect =?, ip_address=?, updated_at=? "+
-                " where id_user = ?";
+                " where id = ?";
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, user.getLastConnect());
@@ -95,18 +102,18 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
         Date date = new Date();
         String last_online = dateFormat.format(date);
         String sql = "SELECT * "+
-                "FROM users WHERE username='"+user.getUsername()+"' AND password='"+user.getPassword()+"'";
+                "FROM users WHERE name='"+user.getUsername()+"' AND plain_password='"+user.getPassword()+"'";
         try{
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(sql);
             while(rs.next()){
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
+                user.setUsername(rs.getString("name"));
+                user.setPassword(rs.getString("plain_password"));
                 user.setLastConnect(last_online);
-                user.setIdUser(rs.getInt("id_user"));
+                user.setIdUser(rs.getInt("id"));
             }
             int idOnline = Client.randomIdOnline(user);
-            Client.clients.put(user.getIdUser(), idOnline);
+            Client.clients.put(user.getIdUser(), idOnline); //store login user in global variable
             user.setIdOnline(idOnline);
             setLastOnline(user);
         }catch(SQLException e){
@@ -117,9 +124,9 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
     
     @Override
     public User logout(User user){
-        Client.clients.remove(user.getIdUser());
+        Client.clients.remove(user.getIdUser()); //remove global login data
         user.setIdOnline(0);
-        System.out.println("logout");
+        System.out.println(user.getUsername()+" logout at "+getTimeNow());
         for(Integer x:Client.clients.keySet()){
             System.out.println(x+"-"+Client.clients.get(x));
         }
@@ -128,14 +135,15 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
 
     @Override
     public Boolean isLogin(User user) throws RemoteException {
-        System.out.println("login");
-        System.out.println(user.getIdUser()+"--"+user.getIdOnline());
-        for(Integer x:Client.clients.keySet()){
-            System.out.println(x+"-"+Client.clients.get(x));
-        }
+        //System.out.println("login");
+        //System.out.println(user.getIdUser()+"--"+user.getIdOnline());
+        //for(Integer x:Client.clients.keySet()){
+        //    System.out.println(x+"-"+Client.clients.get(x));
+        //}
         if(Client.clients.containsKey(user.getIdUser())){
             System.out.println("yes : "+user.getIdOnline());
             if(Client.clients.get(user.getIdUser())==user.getIdOnline()){
+                System.out.println(user.getUsername()+" checks login at "+getTimeNow());
                 return true;
             }
         }
