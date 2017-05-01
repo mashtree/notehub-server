@@ -5,7 +5,6 @@
  */
 package com.advos.notehub.server.service;
 
-import com.advos.notehub.server.Client;
 import com.advos.notehub.server.util.Database;
 import com.notehub.api.entity.User;
 import com.notehub.api.service.UsersService;
@@ -25,7 +24,7 @@ import java.util.Random;
 
 /**
  *
- * @author aisyahumar
+ * @author triyono
  */
 public class UsersServiceServer extends UnicastRemoteObject implements UsersService{
     
@@ -69,7 +68,6 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
         }
         
         return user;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -105,7 +103,6 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -130,7 +127,6 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
             System.out.println(e.getMessage());
         }
         return user;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -155,7 +151,6 @@ public class UsersServiceServer extends UnicastRemoteObject implements UsersServ
             System.out.println(e.getMessage());
         }
         return users;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     private List<Integer> getAllUsersId(){

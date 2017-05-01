@@ -16,7 +16,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author aisyahumar
+ * @author triyono
  */
 public class Client {
     
@@ -48,5 +48,6 @@ public class Client {
         System.out.println("res"+res);
         return res;
     }
+    
     
 }

@@ -5,6 +5,7 @@
  */
 package com.advos.notehub.server.util;
 
+import com.advos.notehub.server.DBConf;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author aisyahumar
+ * @author triyono
  */
 public class Database {
 
@@ -24,8 +25,8 @@ public class Database {
         if (connection == null) {
             try {
                 DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/notehub", "root", "");
-                System.out.println("Connection to mysql database is successfully created");
+                connection = DriverManager.getConnection("jdbc:mysql://"+DBConf.db_host+":"+DBConf.db_port+"/"+DBConf.db_name, DBConf.db_user, DBConf.db_pass);
+                System.out.println("Connection to mysql database : "+DBConf.db_name+" is successfully created");
             } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }

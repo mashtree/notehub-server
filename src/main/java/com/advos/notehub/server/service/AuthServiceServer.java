@@ -7,6 +7,7 @@ package com.advos.notehub.server.service;
 
 import com.advos.notehub.server.Client;
 import com.advos.notehub.server.util.Database;
+import com.advos.notehub.server.util.DateUtil;
 import com.notehub.api.entity.User;
 import com.notehub.api.service.AuthService;
 import java.rmi.RemoteException;
@@ -22,7 +23,7 @@ import java.util.Date;
 
 /**
  *
- * @author aisyahumar
+ * @author triyono
  */
 public class AuthServiceServer extends UnicastRemoteObject implements AuthService{
     
@@ -56,25 +57,14 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
                 if(rs.getInt("isexist")!=1){
                     return user;
                 }else{
-                    //DO something here for keeping the user login data
-                    // every login user will has unique id
-                    // the id will be removed right after clients logout or close the desktop app
                     user = getUpdatedUser(user);
-                    //Client.clients.put(user, Client.randomIdOnline(user));
-                    System.out.println(user.getUsername()+" login at "+getTimeNow()+", id_user:"+Client.clients.get(user.getIdUser()));
+                    System.out.println(DateUtil.getTimeNow()+" "+user.getUsername()+" login, id_user:"+Client.clients.get(user.getIdUser()));
                 }        
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
         return user;
-    }
-    
-    private String getTimeNow(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        String time = dateFormat.format(date);
-        return time;
     }
     
     /**
@@ -126,24 +116,16 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
     public User logout(User user){
         Client.clients.remove(user.getIdUser()); //remove global login data
         user.setIdOnline(0);
-        System.out.println(user.getUsername()+" logout at "+getTimeNow());
-        for(Integer x:Client.clients.keySet()){
-            System.out.println(x+"-"+Client.clients.get(x));
-        }
+        System.out.println(DateUtil.getTimeNow()+" "+user.getUsername()+" logout");
         return user;
     }
 
     @Override
     public Boolean isLogin(User user) throws RemoteException {
-        //System.out.println("login");
-        //System.out.println(user.getIdUser()+"--"+user.getIdOnline());
-        //for(Integer x:Client.clients.keySet()){
-        //    System.out.println(x+"-"+Client.clients.get(x));
-        //}
         if(Client.clients.containsKey(user.getIdUser())){
-            System.out.println("yes : "+user.getIdOnline());
+            System.out.println(DateUtil.getTimeNow()+" user : "+user.getUsername()+", id_online : "+user.getIdOnline());
             if(Client.clients.get(user.getIdUser())==user.getIdOnline()){
-                System.out.println(user.getUsername()+" checks login at "+getTimeNow());
+                System.out.println(DateUtil.getTimeNow()+" "+user.getUsername()+" checks login");
                 return true;
             }
         }

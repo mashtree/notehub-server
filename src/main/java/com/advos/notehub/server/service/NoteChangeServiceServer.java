@@ -6,6 +6,7 @@
 package com.advos.notehub.server.service;
 
 import com.advos.notehub.server.util.Database;
+import com.advos.notehub.server.util.DateUtil;
 import com.notehub.api.entity.Note;
 import com.notehub.api.entity.NoteChange;
 import com.notehub.api.entity.NoteChangesMap;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 /**
  *
- * @author aisyahumar
+ * @author triyono
  */
 public class NoteChangeServiceServer extends UnicastRemoteObject implements NoteChangesService{
     
@@ -37,20 +38,17 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
     }
 
     @Override
-    //public NoteChange insertNoteChange(NoteChange nc) throws RemoteException {
     public NoteChangesMap insertNoteChange(NoteChangesMap ncm) throws RemoteException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String time = dateFormat.format(date);
         Map<Integer, NoteChange> noteChangesMap = ncm.getNoteChangesMap();
-        
+        System.out.println(DateUtil.getTimeNow()+" preparing to insert note's changes");
         try{
             for(int key:noteChangesMap.keySet()){
                 NoteChange nc = noteChangesMap.get(key);
                 String sql = "INSERT INTO "+table+"(version, id_user, id_note, change_type, row_change, old, new, created_at) "+
                 " VALUES(?,?,?,?,?,?,?,?)";
-                //System.out.println(sql);
-                //System.out.println(nc.getVersion()+","+nc.getIdUser()+","+nc.getIdNote()+","+nc.getChangeType()+","+nc.getRowChange());
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ps.setInt(1, nc.getVersion());
                 ps.setInt(2, nc.getIdUser());
@@ -60,15 +58,14 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
                 ps.setString(6, nc.getOld());
                 ps.setString(7, nc.getNewChanges());
                 ps.setString(8, time);
-                
                 ps.executeUpdate();
+                
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        System.out.println(time+" insert changes "+" "+noteChangesMap.size());
+        System.out.println(DateUtil.getTimeNow()+" insert changes "+" "+noteChangesMap.size());
         return ncm;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
@@ -90,7 +87,6 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
@@ -104,7 +100,6 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
@@ -131,13 +126,13 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
             System.out.println(e.getMessage());
         }
         return noteChange;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
     public List<NoteChange> getNoteChanges(long l) throws RemoteException {
         List<NoteChange> notechanges = new ArrayList<>();
         String sql = "SELECT * FROM "+table+" WHERE id_note=?";
+        System.out.println(DateUtil.getTimeNow()+" retrieving note's change data");
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, (int) l);
@@ -159,24 +154,16 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         }
         
         return notechanges;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public List<NoteChange> getNoteChanges(Note note) throws RemoteException {
         return getNoteChanges(note.getIdNote());
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    /*@Override
-    public NoteChangesMap insertNoteChange(NoteChangesMap ncm) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
 
     @Override
     public List<NoteChange> getNoteChanges(Note note, int UID) throws RemoteException {
         return null;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -184,7 +171,7 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         String sql = "SELECT MAX(a.version) as version FROM "+table+" a LEFT JOIN users_to_notes b"
                 + " ON a.id_note = b.id_note "
                 + " WHERE b.id_note=? AND b.id_user=?";
-        //System.out.println(sql+"-"+note.getIdNote()+"-"+UID);
+        System.out.println(DateUtil.getTimeNow()+" get note's last version number on server : "+note.getNoteTitle());
         int version = 0;
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -197,9 +184,8 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        System.out.println("last version - "+note.getIdNote()+"-"+note.getNoteTitle()+"-"+version);
+        System.out.println(DateUtil.getTimeNow()+" last version id - "+version);
         return version;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -209,11 +195,9 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
                 + " ON a.id_note = b.id_note "
                 + " WHERE a.version>="+startingVersion+" AND a.id_note="+note.getIdNote()+" "
                 + " ORDER BY a.version ASC";
-        System.out.println(" "+startingVersion+" "+note.getIdNote());
+        System.out.println(DateUtil.getTimeNow()+" retrieving change's data starting version : "+startingVersion);
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
-            //ps.setInt(1, startingVersion);
-            //ps.setInt(2, note.getIdNote());
             ResultSet rs = ps.executeQuery();
             int version = 0;
             NoteChangesMap ncm = null;
@@ -249,7 +233,6 @@ public class NoteChangeServiceServer extends UnicastRemoteObject implements Note
             System.out.println(e.getMessage());
         }
         return result;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     
