@@ -11,6 +11,8 @@ import com.advos.notehub.server.util.DateUtil;
 import com.notehub.api.entity.User;
 import com.notehub.api.service.AuthService;
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteServer;
+import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +22,8 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -58,11 +62,14 @@ public class AuthServiceServer extends UnicastRemoteObject implements AuthServic
                     return user;
                 }else{
                     user = getUpdatedUser(user);
-                    System.out.println(DateUtil.getTimeNow()+" "+user.getUsername()+" login, id_user:"+Client.clients.get(user.getIdUser()));
+                    System.out.println(DateUtil.getTimeNow()+" "+user.getUsername()+" login, id_user : "+Client.clients.get(user.getIdUser())+""
+                            +", ip address : "+RemoteServer.getClientHost());
                 }        
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
+        } catch (ServerNotActiveException ex) {
+            Logger.getLogger(AuthServiceServer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return user;
     }

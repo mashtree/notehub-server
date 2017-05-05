@@ -99,19 +99,20 @@ public class NotesServiceServer extends UnicastRemoteObject implements NotesServ
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String time = dateFormat.format(date);
-        String sql = "UPDATE "+table+" SET note_title=?,description=?, owner=?, content=?, institution=?,institution_address=?, updated_at=?"+
+        String sql = "UPDATE "+table+" SET note_title=?,description=?, content=?, institution=?,institution_address=?, updated_at=?"+
                 " where id = ?";
         System.out.println(DateUtil.getTimeNow()+" updating "+note.getNoteTitle());
+        //System.out.println(sql);
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, note.getNoteTitle());
             ps.setString(2, note.getDescription());
-            ps.setInt(3, note.getOwner());
-            ps.setString(4, note.getContent());
-            ps.setString(5, note.getInstitution());
-            ps.setString(6, note.getInstitutionAddress());
-            ps.setString(7, time);
-            ps.setInt(8, note.getIdNote());
+            //ps.setInt(3, note.getOwner());
+            ps.setString(3, note.getContent());
+            ps.setString(4, note.getInstitution());
+            ps.setString(5, note.getInstitutionAddress());
+            ps.setString(6, time);
+            ps.setInt(7, note.getIdNote());
             
             ps.executeUpdate();
        
@@ -206,11 +207,33 @@ public class NotesServiceServer extends UnicastRemoteObject implements NotesServ
         int result = 0;
         String sql = "SELECT count(a.id) as idCount FROM users_to_notes a"
                 + " LEFT JOIN notes b ON a.id_note=b.id where a.id_user=? AND b.note_title=?";
-        System.out.println(DateUtil.getTimeNow()+" checking note's existing on server ");
+        System.out.println(DateUtil.getTimeNow()+" checking note's existing on server by note's title");
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, UID);
             ps.setString(2, note);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                int tmp = (int) rs.getInt("idCount");
+                if(tmp>result) result = tmp;
+                
+            }
+        }catch(SQLException e){
+            System.out.println("SQLException : "+e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public int isAvailable(int UID, int NID) throws RemoteException {
+        int result = 0;
+        String sql = "SELECT count(id) as idCount FROM users_to_notes "
+                + " where id_user=? AND id_note=?";
+        System.out.println(DateUtil.getTimeNow()+" checking note's existing on server by note's id");
+        try{
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, UID);
+            ps.setInt(2, NID);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 int tmp = (int) rs.getInt("idCount");

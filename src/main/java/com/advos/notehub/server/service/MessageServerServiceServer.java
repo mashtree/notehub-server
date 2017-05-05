@@ -38,11 +38,19 @@ public class MessageServerServiceServer extends UnicastRemoteObject implements M
         messageClients = new HashMap<>();
         
     }
+    
+    @Override
+    public void removeRegisterUser(int key){
+        if(messageClients.containsKey(key)){
+            messageClients.remove(key);
+            System.out.println(DateUtil.getTimeNow()+" remove clients "+key);
+        }
+    }
 
     @Override
     public void registerUser(int UID, MessageClient mc) throws RemoteException {
         messageClients.put(UID, mc);
-        //System.out.println(DateUtil.getTimeNow()+" add clients "+UID);
+        System.out.println(DateUtil.getTimeNow()+" add clients "+UID);
     }
 
     @Override
@@ -66,7 +74,7 @@ public class MessageServerServiceServer extends UnicastRemoteObject implements M
                 + " ON a.id_note = b.id_note "
                 + " WHERE a.version>=(SELECT MAX(version) FROM note_change WHERE id_note="+id_note+") AND a.id_note="+id_note+" "
                 + " ORDER BY a.version ASC";
-        System.out.println(sql);
+        //System.out.println(sql);
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
